@@ -1,188 +1,160 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const Input = () => {
-//   const navigate = useNavigate()
-//   const [processes, setProcesses] = useState([])
-//   const [arrivalTime, setArrivalTime] = useState('')
-//   const [cpuBurst, setCpuBurst] = useState('')
-//   const [editId, setEditId] = useState(null)
+  const navigate = useNavigate();
+  const [pages, setPages] = useState([]);
+  const [numberOfFrames, setNumberOfFrames] = useState('');
+  const [editId, setEditId] = useState(null);
+  const [currentPageId, setCurrentPageId] = useState('');
 
-//   const getNextProcessId = () => {
-//     const lastProcess = processes[processes.length - 1]
-//     if (!lastProcess) {
-//       return 'A'
-//     }
-//     const lastId = lastProcess.id
-//     const nextCharCode = lastId.charCodeAt(0) + 1
-//     return String.fromCharCode(nextCharCode)
-//   }
+  useEffect(() => {
+    const storedPages = JSON.parse(sessionStorage.getItem('inputPages')) || [];
+    const storedNumberOfFrames = JSON.parse(sessionStorage.getItem('nof')) || [];
+    setNumberOfFrames(storedNumberOfFrames);
+    setPages(storedPages);
+  }, []);
 
-//   const validateInput = () => {
-    
-//     if (arrivalTime === '' || arrivalTime < 0) {
-//       alert('Please enter valid arrival time');
-//       return false;
-//     }
+  const storePagesData = (data, nof) => {
+    sessionStorage.setItem('inputPages', JSON.stringify(data));
+    sessionStorage.setItem('nof', JSON.stringify(nof));
+  };
 
-//     if (cpuBurst === '' || cpuBurst < 1) {
-//       alert('Please enter valid CPU burst time.');
-//       return false;
-//     }
+  const validateInput = () => {
+    if (currentPageId === '' || isNaN(currentPageId) || currentPageId < 0) {
+      alert('Please enter a valid positive integer for Page Reference');
+      return false;
+    }
 
-//     return true;
-//   };
+    return true;
+  };
 
-//   // add or edit process
-//   const handleAddProcess = () => {
-//     if (!validateInput()) {
-//       return;
-//     }
-//     const remaining = parseInt(cpuBurst)
+  const handleAddPage = () => {
+    if (!validateInput()) {
+      return;
+    }
 
-//     if (editId !== null) {
-//       const updatedProcesses = processes.map((process) => {
-//         if (process.id === editId) {
-//           return {
-//             id: process.id,
-//             arrivalTime: parseInt(arrivalTime),
-//             cpuBurst: parseInt(cpuBurst),
-//           }
-//         }
-//         return process
-//       })
-//       setProcesses(updatedProcesses)
-//       setEditId(null)
-//     } else {
-//       const newProcess = {
-//         id: getNextProcessId(),
-//         arrivalTime: parseInt(arrivalTime),
-//         cpuBurst: parseInt(cpuBurst),
-//       }
+    if (editId !== null) {
+      const updatedPages = pages.map((page) =>
+        page.id === editId ? { ...page } : page
+      );
+      setPages(updatedPages);
+      setEditId(null);
+    } else {
+      const newPage = {
+        id: parseInt(currentPageId, 10),
+      };
 
-//       setProcesses([...processes, newProcess])
-//     }
+      setPages([...pages, newPage]);
+    }
 
-//     setArrivalTime('')
-//     setCpuBurst('')
-//   }
+    setCurrentPageId('');
+    setNumberOfFrames('');
+  };
 
-//   // edit process
-//   const handleEditProcess = (id) => {
-//     const processToEdit = processes.find((process) => process.id === id)
-//     if (processToEdit) {
-//       setArrivalTime(processToEdit.arrivalTime.toString())
-//       setCpuBurst(processToEdit.cpuBurst.toString())
-//       setEditId(id)
-//     }
-//   }
+  const handleEditPage = (id) => {
+    const pageToEdit = pages.find((page) => page.id === id);
+    if (pageToEdit) {
+      setCurrentPageId(pageToEdit.id.toString());
+      setEditId(id);
+    }
+  };
 
-//   // delete process
-//   const handleDeleteProcess = (id) => {
-//     setProcesses((prevProcesses) => prevProcesses.filter((process) => process.id !== id))
-//     setEditId(null)
+  const handleDeletePage = (id) => {
+    setPages((prevPages) => prevPages.filter((page) => page.id !== id));
+    setEditId(null);
 
-//     setProcesses((prevProcesses) => {
-//       return prevProcesses.map((process, index) => ({
-//         ...process,
-//         id: String.fromCharCode('A'.charCodeAt(0) + index),
-//       }))
-//     })
-//   }
+    setPages((prevPages) =>
+      prevPages.map((page, index) => ({
+        ...page
+      }))
+    );
+  };
 
-//   useEffect(() => {
-//     const storedProcesses = JSON.parse(sessionStorage.getItem('inputProcesses'))
-//     if (storedProcesses) {
-//       setProcesses(storedProcesses)
-//     }
-//   }, [])
+  const handleSimulate = () => {
+    if (pages.length < 2) {
+      alert('Please add at least two pages before simulating.');
+      return;
+    }
 
-//   const storeProcessesData = (data) => {
-//     sessionStorage.setItem('inputProcesses', JSON.stringify(data))
-//   }
+    const parsedNumberOfFrames = parseInt(numberOfFrames, 10);
 
-//   const handleSimulate = () => {
+    if (isNaN(parsedNumberOfFrames) || parsedNumberOfFrames < 1) {
+      alert('Please enter a valid number of frames.');
+      return;
+    }
 
-//     if (processes.length < 2) {
-//       alert('Please add at least two processes before simulating.');
-//       return;
-//     }
+    storePagesData(pages, parsedNumberOfFrames);
 
-//     storeProcessesData(processes)
-//     navigate('/scheduling', {
-//       state: {
-//         processes,
-//       },
-//     })
-//   }
+    navigate('/page-replacement', {
+      state: {
+        pages,
+        nof: parsedNumberOfFrames,
+      },
+    });
+  };
 
-//   const handleBack = () => {
-//     navigate('/');
-//     window.location.reload();
-//   };
+  const handleBack = () => {
+    navigate('/');
+    window.location.reload();
+  };
 
   return (
     <div>
-      <h1>Input Processes</h1>
-      {/* <button onClick={handleBack} className="btn btn-primary">Back to Home</button>
-      <table className="table mt-5">
+      <h1>Input Parameters</h1>
+      <button onClick={handleBack} className="btn btn-primary">
+        Back to Home
+      </button>
+      <div className="row justify-content-end">
+        <div className="col form-group col-auto ml-auto">
+          <h5 className="bold">No. of Frames</h5>
+          <input
+            type="number"
+            value={numberOfFrames}
+            onChange={(e) => setNumberOfFrames(e.target.value)}
+            className="form-control"
+            style={{ maxWidth: '150px' }}
+          />
+        </div>
+      </div>
+      <table className="table mt-3">
         <thead>
           <tr>
-            <th>Process ID</th>
-            <th>Arrival Time</th>
-            <th>CPU Burst</th>
-            <th>Action</th>
+            <th>Page Reference</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {processes.map((process) => (
-            <tr key={process.id}>
-              <td>{process.id}</td>
+          {pages.map((page) => (
+            <tr key={page.id}>
               <td>
-                {editId === process.id ? (
+                {editId === page.id ? (
                   <input
                     type="number"
-                    value={arrivalTime}
-                    onChange={(e) => setArrivalTime(e.target.value)}
-                    className="form-control"
+                    value={currentPageId}
+                    onChange={(e) => setCurrentPageId(e.target.value)}
+                    onBlur={() => setEditId(null)}
+                    className="form-control w-50"
                   />
                 ) : (
-                  process.arrivalTime
+                  page.id
                 )}
               </td>
               <td>
-                {editId === process.id ? (
-                  <input
-                    type="number"
-                    value={cpuBurst}
-                    onChange={(e) => setCpuBurst(e.target.value)}
-                    className="form-control"
-                  />
-                ) : (
-                  process.cpuBurst
-                )}
-              </td>
-              <td>
-                {editId === process.id ? (
-                  <button onClick={handleAddProcess} className="btn btn-primary">
-                    Save
+                <>
+                  <button
+                    onClick={() => handleEditPage(page.id)}
+                    className="btn btn-warning mx-2"
+                  >
+                    Edit
                   </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleEditProcess(process.id)}
-                      className="btn btn-warning mx-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProcess(process.id)}
-                      className="btn btn-danger mx-2"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
+                  <button
+                    onClick={() => handleDeletePage(page.id)}
+                    className="btn btn-danger mx-2"
+                  >
+                    Delete
+                  </button>
+                </>
               </td>
             </tr>
           ))}
@@ -192,38 +164,26 @@ export const Input = () => {
       <div className="row mt-5">
         <div className="col">
           <div className="form-group">
-            <h5 className="bold">Arrival Time</h5>
+            <h5 className="bold">Page Reference</h5>
             <input
               type="number"
-              value={arrivalTime}
-              onChange={(e) => setArrivalTime(e.target.value)}
-              className="form-control"
-            />
-          </div>
-        </div>
-
-        <div className="col">
-          <div className="form-group">
-            <h5 className="bold">CPU Burst</h5>
-            <input
-              type="number"
-              value={cpuBurst}
-              onChange={(e) => setCpuBurst(e.target.value)}
+              value={currentPageId}
+              onChange={(e) => setCurrentPageId(e.target.value)}
               className="form-control"
             />
           </div>
         </div>
 
         <div className="col mt-2">
-          <button onClick={handleAddProcess} className="btn btn-primary m-4">
-            {editId !== null ? 'Save' : 'Add Process'}
+          <button onClick={handleAddPage} className="btn btn-primary m-4">
+            {editId !== null ? 'Save' : 'Add Page'}
           </button>
         </div>
       </div>
 
       <button onClick={handleSimulate} className="btn btn-lg btn-danger mx-2 mt-5">
-        Simulate Scheduling
-      </button> */}
+        Simulate Page Replacement
+      </button>
     </div>
-  )
-}
+  );
+};
