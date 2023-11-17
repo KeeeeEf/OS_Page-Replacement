@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export const PageReplacement = () => {
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const { processes, qt } = location.state;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { pages, nof } = location.state;
+
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
+  const [noFrames, setNoFrames] = useState('');
+
 //   const [schedulingData, setSchedulingData] = useState([]);
 //   const [timelineData, setTimelineData] = useState([]);
 //   const [quantumTime, setQuantumTime] = useState([]);
@@ -19,16 +23,15 @@ export const PageReplacement = () => {
 //   const [totalAWT, setTotalAWT] = useState(0);
 //   const [totalProcesses, setTotalProcesses] = useState(0);
 
-//   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
+  useEffect(() => {
+    const selectedAlgo = sessionStorage.getItem('selectedAlgorithm');
 
-//   useEffect(() => {
-//     const selectedAlgorithm = sessionStorage.getItem('selectedAlgorithm');
-
-//     import(/* @vite-ignore */ `./algos/${selectedAlgorithm.toLowerCase()}`).then((module) => {
-//       const { calculateScheduling } = module;
+    import(/* @vite-ignore */ `./algos/${selectedAlgo.toLowerCase()}`).then((module) => {
+      const { calculateReplacement } = module;
       
-//       const tq = parseInt(qt, 10);
-//       const functionCall = calculateScheduling(processes, tq);
+      const frames = parseInt(nof, 10);
+      const functionCall = calculateReplacement(pages, frames);
+
 //       const originalData = functionCall.schedulingData;
 //       const sortedData = [...originalData].sort((a, b) => a.process.id.localeCompare(b.process.id));
 //       const timeline = functionCall.timelineList;
@@ -56,26 +59,27 @@ export const PageReplacement = () => {
 //       setFinalEndTime(finEndTime);
 //       setCpuUtilization(cpuUtil);
 
-//       setSelectedAlgorithm(selectedAlgorithm);
-//       setQuantumTime(tq);
-//     });
-//   }, [processes, qt]);
+        setSelectedAlgorithm(selectedAlgo);
+        setNoFrames(nof);
+        console.log("Algo: "+ selectedAlgorithm);
+    });
+  }, [pages, nof]);
 
-//   const handleBack = () => {
-//     navigate('/rr-input');
-//     window.location.reload();
-//   };
+  const handleBack = () => {
+    navigate('/input');
+    window.location.reload();
+  };
 
-//   const handleSimulateAgain = () => {
-//     navigate('/', { state: { key: Date.now() } });
-//     sessionStorage.clear();
-//     window.location.reload();
-//   };
+  const handleSimulateAgain = () => {
+    navigate('/', { state: { key: Date.now() } });
+    sessionStorage.clear();
+    window.location.reload();
+  };
 
   return (
     <div>
-      <h1>Page Replacement</h1>
-      <h5>No. of Frames: </h5>
+      <h1>{selectedAlgorithm} Page Replacement</h1>
+      <h5>No. of Frames: {nof}</h5>
       {/* <table className="table">
         <thead>
           <tr>
@@ -100,8 +104,11 @@ export const PageReplacement = () => {
           ))}
         </tbody>
       </table>
-      <button onClick={handleBack} className="btn btn-primary">Back to Input Processes</button>
+          */}
 
+      <button onClick={handleBack} className="btn btn-primary">Back to Input Parameters</button>
+    
+        {/*
       <div className="container">
       <h2>Performance</h2>
         <div className="row">
@@ -138,7 +145,8 @@ export const PageReplacement = () => {
           </div>
         </div>
       </div>
-      <button onClick={handleSimulateAgain} className="btn btn-danger btn-lg mt-5">Simulate Again</button> */}
+       */}
+      <button onClick={handleSimulateAgain} className="btn btn-danger btn-lg mt-5">Simulate Again</button>
     </div>
   );
 };
