@@ -17,9 +17,7 @@ export const PageReplacement = () => {
 
     import(/* @vite-ignore */ `./algos/${selectedAlgo.toLowerCase()}`).then((module) => {
       const { calculateReplacement } = module;
-      
-      const defFrames = 3; //only 3 frames for all algos except optimal
-      const frames = parseInt(defFrames, 10);
+      const frames = parseInt(nof, 10);
       const functionCall = calculateReplacement(pages, frames);
 
       const resultData = functionCall.frameResults || [];

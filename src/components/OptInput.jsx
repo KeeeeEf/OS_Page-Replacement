@@ -82,7 +82,7 @@ export const OptInput = () => {
           />
         </div>
         <div className="form-group mt-5">
-          <h5><b>Pages</b></h5>
+          <h5><b>Page References</b></h5>
           <h6>(separate by comma)</h6>
           <input
             type="text"

@@ -10,7 +10,7 @@ function Home() {
 
   const algoAcronyms = {
     'First-In, First-Out': 'FIFO',
-    'Least Recently Used': 'LFU',
+    'Least Recently Used': 'LRU',
     'Least Frequently Used': 'LFU',
     'Optimal Page Replacement': 'OPT',
   };

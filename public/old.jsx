@@ -1,3 +1,5 @@
+//old PageReplacement for default 3 frames
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -29,12 +31,6 @@ export const Input = () => {
 
     if (pageValues.length < 2) {
       alert('Please enter at least two pages.');
-      return false;
-    }
-
-    const parsedNumberOfFrames = parseInt(numberOfFrames, 10);
-    if (isNaN(parsedNumberOfFrames) || parsedNumberOfFrames < 3) {
-      alert('Please enter a valid number of frames (at least 3).');
       return false;
     }
 
@@ -76,9 +72,10 @@ export const Input = () => {
           <h5><b>No. of Frames</b></h5>
           <input
             type="number"
-            value={numberOfFrames}
+            value = {3}
             onChange={(e) => setNumberOfFrames(e.target.value)}
             className="form-control text-center"
+            disabled
           />
         </div>
         <div className="form-group mt-5">
