@@ -83,6 +83,7 @@ export const PageReplacement = () => {
               </React.Fragment>
             ))} 
           </tr>
+          <tr><th></th></tr>
             {Array.from({ length: noFrames }, (_, i) => (
             <React.Fragment key={i}>
               <tr>
