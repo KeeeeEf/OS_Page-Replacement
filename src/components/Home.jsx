@@ -32,7 +32,7 @@ function Home() {
         navigate('/input');
         break;
       case 'Optimal Page Replacement':
-        navigate('/input');
+        navigate('/optimal-input');
         break;
       default:
         navigate('/input');

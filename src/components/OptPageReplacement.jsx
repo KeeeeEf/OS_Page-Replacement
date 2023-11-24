@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export const PageReplacement = () => {
+export const OptPageReplacement = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { pages, nof } = location.state;
@@ -18,8 +18,7 @@ export const PageReplacement = () => {
     import(/* @vite-ignore */ `./algos/${selectedAlgo.toLowerCase()}`).then((module) => {
       const { calculateReplacement } = module;
       
-      const defFrames = 3; //applies except for optimal
-      const frames = parseInt(defFrames, 10);
+      const frames = parseInt(nof, 10);
       const functionCall = calculateReplacement(pages, frames);
 
       const resultData = functionCall.frameResults || [];
@@ -35,7 +34,7 @@ export const PageReplacement = () => {
   }, [pages, nof]);
 
   const handleBack = () => {
-    navigate('/input');
+    navigate('/optimal-input');
     window.location.reload();
   };
 

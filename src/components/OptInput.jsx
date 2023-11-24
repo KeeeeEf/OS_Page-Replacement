@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const Input = () => {
+export const OptInput = () => {
   const navigate = useNavigate();
   const [pages, setPages] = useState([]);
   const [numberOfFrames, setNumberOfFrames] = useState('');
@@ -32,6 +32,12 @@ export const Input = () => {
       return false;
     }
 
+    const parsedNumberOfFrames = parseInt(numberOfFrames, 10);
+    if (isNaN(parsedNumberOfFrames) || parsedNumberOfFrames < 3) {
+      alert('Please enter a valid number of frames (at least 3).');
+      return false;
+    }
+
     return true;
   };
 
@@ -45,7 +51,7 @@ export const Input = () => {
 
     storePagesData(pages, parsedNumberOfFrames);
 
-    navigate('/page-replacement', {
+    navigate('/opt-page-replacement', {
       state: {
         pages,
         nof: parsedNumberOfFrames,
@@ -70,10 +76,9 @@ export const Input = () => {
           <h5><b>No. of Frames</b></h5>
           <input
             type="number"
-            value = {3}
+            value={numberOfFrames}
             onChange={(e) => setNumberOfFrames(e.target.value)}
             className="form-control text-center"
-            disabled
           />
         </div>
         <div className="form-group mt-5">
