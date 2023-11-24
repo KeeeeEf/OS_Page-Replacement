@@ -5,12 +5,10 @@ export const Input = () => {
   const navigate = useNavigate();
   const [pages, setPages] = useState([]);
   const [numberOfFrames, setNumberOfFrames] = useState('');
-  const [editId, setEditId] = useState(null);
-  const [currentPageId, setCurrentPageId] = useState('');
 
   useEffect(() => {
     const storedPages = JSON.parse(sessionStorage.getItem('inputPages')) || [];
-    const storedNumberOfFrames = JSON.parse(sessionStorage.getItem('nof')) || [];
+    const storedNumberOfFrames = JSON.parse(sessionStorage.getItem('nof')) || '';
     setNumberOfFrames(storedNumberOfFrames);
     setPages(storedPages);
   }, []);
@@ -21,57 +19,18 @@ export const Input = () => {
   };
 
   const validateInput = () => {
-    if (currentPageId === '' || isNaN(currentPageId) || currentPageId < 0) {
-      alert('Please enter a valid positive integer for Page Reference');
+    const pageValues = pages.map(Number);
+
+    if (pageValues.some(isNaN) || pageValues.some(val => val < 0)) {
+      alert('Please enter valid positive integers for Page Reference');
       return false;
     }
 
     return true;
   };
 
-  const handleAddPage = () => {
-    if (!validateInput()) {
-      return;
-    }
-
-    if (editId !== null) {
-      const updatedPages = pages.map((page) =>
-        page.id === editId ? { ...page } : page
-      );
-      setPages(updatedPages);
-      setEditId(null);
-    } else {
-      const newPage = {
-        id: parseInt(currentPageId, 10),
-      };
-
-      setPages([...pages, newPage]);
-    }
-
-    setCurrentPageId('');
-    setNumberOfFrames('');
-  };
-
-  const handleEditPage = (id) => {
-    const pageToEdit = pages.find((page) => page.id === id);
-    if (pageToEdit) {
-      setCurrentPageId(pageToEdit.id.toString());
-      setEditId(id);
-    }
-  };
-
-  const handleDeletePage = (id) => {
-    setPages((prevPages) => prevPages.filter((page) => page.id !== id));
-    setEditId(null);
-
-    setPages((prevPages) =>
-      prevPages.map((page, index) => ({
-        ...page
-      }))
-    );
-  };
-
   const handleSimulate = () => {
+
     if (pages.length < 2) {
       alert('Please add at least two pages before simulating.');
       return;
@@ -100,84 +59,33 @@ export const Input = () => {
   };
 
   return (
-    <div>
+    <div className="text-center">
       <h1>Input Parameters</h1>
       <button onClick={handleBack} className="btn btn-primary">
         Back to Home
       </button>
-      <div className="row justify-content-end">
-        <div className="col form-group col-auto ml-auto">
-          <h5 className="bold">No. of Frames</h5>
+
+      <div className="mt-5 text-center mx-auto w-25">
+        <div className="form-group">
+          <h5><b>No. of Frames</b></h5>
           <input
             type="number"
-            value={numberOfFrames}
+            // value={numberOfFrames}
+            value = {3}
             onChange={(e) => setNumberOfFrames(e.target.value)}
-            className="form-control"
-            style={{ maxWidth: '150px' }}
+            className="form-control text-center"
+            disabled
           />
         </div>
-      </div>
-      <table className="table mt-3">
-        <thead>
-          <tr>
-            <th>Page Reference</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pages.map((page) => (
-            <tr key={page.id}>
-              <td>
-                {editId === page.id ? (
-                  <input
-                    type="number"
-                    value={currentPageId}
-                    onChange={(e) => setCurrentPageId(e.target.value)}
-                    onBlur={() => setEditId(null)}
-                    className="form-control w-50"
-                  />
-                ) : (
-                  page.id
-                )}
-              </td>
-              <td>
-                <>
-                  <button
-                    onClick={() => handleEditPage(page.id)}
-                    className="btn btn-warning mx-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeletePage(page.id)}
-                    className="btn btn-danger mx-2"
-                  >
-                    Delete
-                  </button>
-                </>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="row mt-5">
-        <div className="col">
-          <div className="form-group">
-            <h5 className="bold">Page Reference</h5>
-            <input
-              type="number"
-              value={currentPageId}
-              onChange={(e) => setCurrentPageId(e.target.value)}
-              className="form-control"
-            />
-          </div>
-        </div>
-
-        <div className="col mt-2">
-          <button onClick={handleAddPage} className="btn btn-primary m-4">
-            {editId !== null ? 'Save' : 'Add Page'}
-          </button>
+        <div className="form-group mt-5">
+          <h5><b>Page References</b></h5>
+          <h6>(comma-separated)</h6>
+          <input
+            type="text"
+            value={pages.join(',')}
+            onChange={(e) => setPages(e.target.value.split(',').map(Number))}
+            className="form-control text-center"
+          />
         </div>
       </div>
 

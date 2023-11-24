@@ -5,23 +5,14 @@ export const PageReplacement = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { pages, nof } = location.state;
+  console.log("Frames: "+ nof);
+  console.log("Pages: "+ pages);
 
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
   const [noFrames, setNoFrames] = useState('');
-
-//   const [schedulingData, setSchedulingData] = useState([]);
-//   const [timelineData, setTimelineData] = useState([]);
-//   const [quantumTime, setQuantumTime] = useState([]);
-
-//   const [averageTurnaroundTime, setAverageTurnaroundTime] = useState(0);
-//   const [averageWaitingTime, setAverageWaitingTime] = useState(0);
-//   const [cpuUtilization, setCpuUtilization] = useState(0);
-//   const [totalCpuBurst, setTotalCpuBurst] = useState(0);
-//   const [finalEndTime, setFinalEndTime] = useState(0);
-
-//   const [totalTAT, setTotalTAT] = useState(0);
-//   const [totalAWT, setTotalAWT] = useState(0);
-//   const [totalProcesses, setTotalProcesses] = useState(0);
+  const [tableData, setTableData] = useState([]);
+  const [pageFaults, setPageFaults] = useState(0);
+  const [pageHits, setPageHits] = useState(0);
 
   useEffect(() => {
     const selectedAlgo = sessionStorage.getItem('selectedAlgorithm');
@@ -32,36 +23,16 @@ export const PageReplacement = () => {
       const frames = parseInt(nof, 10);
       const functionCall = calculateReplacement(pages, frames);
 
-//       const originalData = functionCall.schedulingData;
-//       const sortedData = [...originalData].sort((a, b) => a.process.id.localeCompare(b.process.id));
-//       const timeline = functionCall.timelineList;
+      const resultData = functionCall.frameResults || [];
+      const { pageFaults, pageHits } = functionCall;
+      console.log("Results: "+ resultData);
 
-//       const totalTurnaroundTime = sortedData.reduce((acc, data) => acc + data.turnaroundTime, 0);
-//       const avgTurnaroundTime = totalTurnaroundTime / sortedData.length;
+      setSelectedAlgorithm(selectedAlgo);
+      setNoFrames(frames);
+      setTableData(resultData);
 
-//       const totalWaitingTime = sortedData.reduce((acc, data) => acc + data.waitingTime, 0);
-//       const avgWaitingTime = totalWaitingTime / sortedData.length;
-
-//       const ttlCpuBurst = sortedData.reduce((acc, data) => acc + data.process.cpuBurst, 0);
-//       const finEndTime = sortedData.reduce((maxEndTime, data) => { return Math.max(maxEndTime, data.endTime); }, 0);
-//       const cpuUtil = (ttlCpuBurst / finEndTime) * 100;
-
-//       setSchedulingData(sortedData);
-//       setTimelineData(timeline);
-
-//       setTotalTAT(totalTurnaroundTime);
-//       setTotalAWT(totalWaitingTime);
-//       setTotalProcesses(sortedData.length);
-
-//       setAverageTurnaroundTime(avgTurnaroundTime);
-//       setAverageWaitingTime(avgWaitingTime);
-//       setTotalCpuBurst(ttlCpuBurst);
-//       setFinalEndTime(finEndTime);
-//       setCpuUtilization(cpuUtil);
-
-        setSelectedAlgorithm(selectedAlgo);
-        setNoFrames(nof);
-        console.log("Algo: "+ selectedAlgorithm);
+      setPageFaults(pageFaults);
+      setPageHits(pageHits);
     });
   }, [pages, nof]);
 
@@ -78,75 +49,85 @@ export const PageReplacement = () => {
 
   return (
     <div>
-      <h1>{selectedAlgorithm} Page Replacement</h1>
-      <h5>No. of Frames: {nof}</h5>
-      {/* <table className="table">
+      <div className="text-center">
+        <h1>{selectedAlgorithm} Page Replacement</h1>
+        <button onClick={handleBack} className="btn btn-primary">
+          Back to Input Parameters
+        </button>
+      </div>
+      
+      <div className='row mt-3'>
+        <div className='col'>
+          <h5><b>No. of Frames:</b> {noFrames}</h5>
+          <h5><b>Total Memory References:</b> {pages.length}</h5>
+        </div>
+        <div className='col'>
+        </div>
+        <div className='col'>
+        </div>
+      </div>
+
+      <table className="table mt-4 text-center table-striped">
         <thead>
           <tr>
-            <th>Process ID</th>
-            <th>Arrival Time</th>
-            <th>CPU Burst</th>
-            <th>End Time</th>
-            <th>Turnaround Time</th>
-            <th>Waiting Time</th>
+            <th>Pages</th>
+            {pages.map((page, pageIndex) => (
+              <td key={pageIndex}>{page}</td>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {schedulingData.map((data, index) => (
-            <tr key={index}>
-              <td>{data.process.id}</td>
-              <td>{data.process.arrivalTime}</td>
-              <td>{data.process.cpuBurst}</td>
-              <td>{data.endTime}</td>
-              <td>{data.turnaroundTime}</td>
-              <td>{data.waitingTime}</td>
-            </tr>
+          <tr>
+            <th>Iterations</th>
+            {tableData.map((step, iteration) => (
+              <React.Fragment key={iteration}>
+                <td>{iteration + 1}</td>
+              </React.Fragment>
+            ))} 
+          </tr>
+            {Array.from({ length: noFrames }, (_, i) => (
+            <React.Fragment key={i}>
+              <tr>
+                <th>Frame {i + 1}</th>
+                {tableData.map((step, iteration) => (
+                  <td key={iteration}>
+                    {step.frames[i] !== null ? step.frames[i] : '-'}
+                  </td>
+                ))}
+              </tr>
+            </React.Fragment>
           ))}
+          <tr>
+            <th></th>
+            {tableData.map((step, iteration) => (
+              <td key={iteration}>
+                {step.pageFault ? 'Fault' : step.pageHit ? 'Hit' : ''}
+              </td>
+            ))}
+          </tr>
         </tbody>
       </table>
-          */}
-
-      <button onClick={handleBack} className="btn btn-primary">Back to Input Parameters</button>
-    
-        {/*
-      <div className="container">
-      <h2>Performance</h2>
-        <div className="row">
-          <div className="col">
-            <h5>
-              CPU Utilization is at <sup>{totalCpuBurst}</sup>/<sub>{finalEndTime}</sub> = {cpuUtilization.toFixed(2)}%
-            </h5>
-          </div>
+      
+      <div className="row mt-4 text-center">
+        <div className="col">
+          <h5><b>Total Page Faults:</b> {pageFaults}</h5>
+          <h5><b>Total Page Hits:</b> {pageHits}</h5>
         </div>
-        <div className="row">
-          <div className="col">{schedulingData.map((data, index) => (
-            <p key={index}>
-              TAT<sub>{data.process.id}</sub> = {data.endTime} - {data.process.arrivalTime} = {data.turnaroundTime} ms
-            </p>
-            ))}
-            <h5>
-              The average turnaround time is
-              <br/>{'('}{schedulingData.map((data) => data.turnaroundTime).join(' + ')}{')'} / {totalProcesses} 
-              <br/>= {totalTAT} / {totalProcesses} = {averageTurnaroundTime.toFixed(2)}{' '}ms
-            </h5>
-          </div>
-
-          <div className="col">
-            {schedulingData.map((data, index) => (
-            <p key={index}>
-              WT<sub>{data.process.id}</sub> = {data.turnaroundTime} - {data.process.cpuBurst} = {data.waitingTime} ms
-            </p>
-            ))}
-            <h5>
-              The average waiting time is
-              <br/>{'('}{schedulingData.map((data) => data.waitingTime).join(' + ')}{')'} / {totalProcesses} 
-              <br/>= {totalAWT} / {totalProcesses} = {averageWaitingTime.toFixed(2)}{' '}ms
-            </h5>
-          </div>
+        <div className="col">
+          <h5><b>Faults Ratio:</b> {(pageFaults / pages.length * 100).toFixed(2)}%</h5>
+          <h5><b>Hits Ratio:</b> {(pageHits / pages.length * 100).toFixed(2)}%</h5>
         </div>
       </div>
-       */}
-      <button onClick={handleSimulateAgain} className="btn btn-danger btn-lg mt-5">Simulate Again</button>
+
+      <div className="text-center">
+        <button
+          onClick={handleSimulateAgain}
+          className="btn btn-danger btn-lg"
+        >
+          Simulate Again
+        </button>
+      </div>
+
     </div>
   );
 };

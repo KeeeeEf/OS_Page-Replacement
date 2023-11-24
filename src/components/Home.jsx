@@ -56,7 +56,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div className="text-center">
       <h1>Page Replacement Simulator</h1>
       <h4>By Gallego & Garcia</h4>
       <div className='m-5'>
