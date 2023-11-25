@@ -52,9 +52,9 @@ function calculateReplacement(pages, nof){
             pageHits++;
 
             frameResults.push({
-                fames:[...frames],
+                frames:[...frames],
                 pageFault: false,
-                pageHIt: true,
+                pageHit: true,
             });
         }
     }
