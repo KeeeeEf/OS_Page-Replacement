@@ -2,6 +2,7 @@ function calculateReplacement(pages, nof){
     const frames = Array(nof).fill(null); 
     const pageQueue = []; 
     const frameResults = [];
+    const replacedPages = new Array(pages.length);
 
     let pageFaults = 0;
     let pageHits = 0;
@@ -15,6 +16,7 @@ function calculateReplacement(pages, nof){
             if(frames.includes(null)){
                 const emptyFrameIndex = frames.indexOf(null);
                 frames[emptyFrameIndex] = currentPage;
+                replacedPages.push(null);
             }else{
                 let leastUsedIndex = 0;
                 let queueIndex;
@@ -38,8 +40,8 @@ function calculateReplacement(pages, nof){
                 const replacedPage = pageQueue.splice(queueIndex,1)[0]
                 const replacedPageIndex = frames.indexOf(replacedPage);
                 frames[replacedPageIndex] = currentPage;
-                
-            }
+                replacedPages.push(replacedPage);
+            }   
 
             pageQueue.push(currentPage);
 
@@ -56,9 +58,10 @@ function calculateReplacement(pages, nof){
                 pageFault: false,
                 pageHit: true,
             });
+            replacedPages.push(null);
         }
     }
-    return { frameResults, pageFaults, pageHits };
+    return { frameResults, pageFaults, pageHits, replacedPages };
 }
 
 export { calculateReplacement};

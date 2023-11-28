@@ -9,6 +9,7 @@ export const PageReplacement = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
   const [noFrames, setNoFrames] = useState('');
   const [tableData, setTableData] = useState([]);
+  const [replacedData, setReplacedData] = useState([]);
   const [pageFaults, setPageFaults] = useState(0);
   const [pageHits, setPageHits] = useState(0);
 
@@ -21,12 +22,13 @@ export const PageReplacement = () => {
       const functionCall = calculateReplacement(pages, frames);
 
       const resultData = functionCall.frameResults || [];
+      const resultReplaced = functionCall.replacedPages || [];
       const { pageFaults, pageHits } = functionCall;
 
       setSelectedAlgorithm(selectedAlgo);
       setNoFrames(frames);
       setTableData(resultData);
-
+      setReplacedData(resultReplaced);
       setPageFaults(pageFaults);
       setPageHits(pageHits);
     });
@@ -101,6 +103,14 @@ export const PageReplacement = () => {
                 {step.pageFault ? 'Fault' : step.pageHit ? 'Hit' : ''}
               </td>
             ))}
+          </tr>
+          <tr>
+            <th>Replaced Pages</th>
+            {replacedData.map((replacedData, iteration) => (
+              <React.Fragment>
+                  <td key={iteration}>{replacedData !== null ? replacedData : '-'}</td>
+              </React.Fragment>
+            ))} 
           </tr>
         </tbody>
       </table>

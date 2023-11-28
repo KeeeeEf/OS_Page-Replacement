@@ -9,6 +9,7 @@ export const OptPageReplacement = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
   const [noFrames, setNoFrames] = useState('');
   const [tableData, setTableData] = useState([]);
+  const [replacedData, setReplacedData] = useState([]);
   const [pageFaults, setPageFaults] = useState(0);
   const [pageHits, setPageHits] = useState(0);
 
@@ -17,24 +18,24 @@ export const OptPageReplacement = () => {
 
     import(/* @vite-ignore */ `./algos/${selectedAlgo.toLowerCase()}`).then((module) => {
       const { calculateReplacement } = module;
-      
       const frames = parseInt(nof, 10);
       const functionCall = calculateReplacement(pages, frames);
 
       const resultData = functionCall.frameResults || [];
+      const resultReplaced = functionCall.replacedPages || [];
       const { pageFaults, pageHits } = functionCall;
 
       setSelectedAlgorithm(selectedAlgo);
       setNoFrames(frames);
       setTableData(resultData);
-
+      setReplacedData(resultReplaced);
       setPageFaults(pageFaults);
       setPageHits(pageHits);
     });
   }, [pages, nof]);
 
   const handleBack = () => {
-    navigate('/optimal-input');
+    navigate('/input');
     window.location.reload();
   };
 
@@ -102,6 +103,14 @@ export const OptPageReplacement = () => {
                 {step.pageFault ? 'Fault' : step.pageHit ? 'Hit' : ''}
               </td>
             ))}
+          </tr>
+          <tr>
+            <th>Replaced Pages</th>
+            {replacedData.map((replacedData, iteration) => (
+              <React.Fragment>
+                  <td key={iteration}>{replacedData !== null ? replacedData : '-'}</td>
+              </React.Fragment>
+            ))} 
           </tr>
         </tbody>
       </table>
